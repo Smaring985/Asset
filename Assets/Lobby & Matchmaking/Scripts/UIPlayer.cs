@@ -8,11 +8,13 @@ namespace MirrorBasics {
     public class UIPlayer : MonoBehaviour {
 
         [SerializeField] Text text;
-        Player player;
+        public Player player;
 
         public void SetPlayer (Player player) {
+            Message.instance.AddMessage("UIPlayer.SetPlayer(). run");
             this.player = player;
-            text.text = "Player " + player.playerIndex.ToString ();
+            //text.text = "Player " + player.playerIndex.ToString ();
+            text.text = player.NickName;
         }
 
     }

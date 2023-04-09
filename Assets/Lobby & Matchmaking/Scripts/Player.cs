@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace MirrorBasics {
 
@@ -22,34 +23,36 @@ namespace MirrorBasics {
 
         Guid netIDGuid;
 
+        [Header("Kirill change")]
+        [SyncVar] public string NickName="None";
+
         void Awake () {
             networkMatch = GetComponent<NetworkMatch> ();
         }
 
         public override void OnStartServer () {
-            Debug.Log("OnStartServer(). run");
-
+            Message.instance.AddMessage("Player.OnStartServer(). run");
             netIDGuid = netId.ToString ().ToGuid ();
             networkMatch.matchId = netIDGuid;
         }
 
         public override void OnStartClient () {
-            Debug.Log("OnStartClient(). run");
+            Message.instance.AddMessage("Player.OnStartClient(). run");
             if (isLocalPlayer) {
                 localPlayer = this;
             } else {
-                Debug.Log ($"Spawning other player UI Prefab");
+                Debug.Log ($"Spawning other player UI Prefab (NickName {NickName})");
                 playerLobbyUI = UILobby.instance.SpawnPlayerUIPrefab (this);
             }
         }
 
         public override void OnStopClient () {
-            Debug.Log ($"Client Stopped");
+            Message.instance.AddMessage($"Player.OnStopClient() Client Stopped");
             ClientDisconnect ();
         }
 
         public override void OnStopServer () {
-            Debug.Log ($"Client Stopped on Server");
+            Message.instance.AddMessage($"Player. Client Stopped on Server");
             ServerDisconnect ();
         }
 
@@ -58,14 +61,14 @@ namespace MirrorBasics {
         */
 
         public void HostGame (bool publicMatch) {
-            Debug.Log("HostGame(). run");
+            Message.instance.AddMessage($"Player.HostGame(publicMatch {publicMatch}). run");
             string matchID = MatchMaker.GetRandomMatchID ();
             CmdHostGame (matchID, publicMatch);
         }
 
         [Command]
         void CmdHostGame (string _matchID, bool publicMatch) {
-            Debug.Log("CmdHostGame(). run");
+            Message.instance.AddMessage($"Player.CmdHostGame(_matchID {_matchID}, publicMatch {publicMatch}). run");
             matchID = _matchID;
             if (MatchMaker.instance.HostGame (_matchID, this, publicMatch, out playerIndex)) {
                 Debug.Log ($"<color=green>Game hosted successfully</color>");
@@ -79,7 +82,7 @@ namespace MirrorBasics {
 
         [TargetRpc]
         void TargetHostGame (bool success, string _matchID, int _playerIndex) {
-            Debug.Log("TargetHostGame(). run");
+            Message.instance.AddMessage($"Player.TargetHostGame(success {success}, _matchID {_matchID}, _playerIndex {_playerIndex}). run");
             playerIndex = _playerIndex;
             matchID = _matchID;
             Debug.Log ($"MatchID: {matchID} == {_matchID}");
@@ -91,13 +94,13 @@ namespace MirrorBasics {
         */
 
         public void JoinGame (string _inputID) {
-            Debug.Log("JoinGame(). run");
+            Message.instance.AddMessage($"Player.JoinGame(_inputID {_inputID}). run");
             CmdJoinGame(_inputID);
         }
 
         [Command]
         void CmdJoinGame (string _matchID) {
-            Debug.Log("CmdJoinGame(). run");
+            Message.instance.AddMessage($"Player.CmdJoinGame(_matchID {_matchID}). run");
             matchID = _matchID;
             if (MatchMaker.instance.JoinGame (_matchID, this, out playerIndex)) {
                 Debug.Log ($"<color=green>Game Joined successfully</color>");
@@ -116,7 +119,7 @@ namespace MirrorBasics {
 
         [TargetRpc]
         void TargetJoinGame (bool success, string _matchID, int _playerIndex) {
-            Debug.Log("TargetJoinGame(). run");
+            Message.instance.AddMessage($"Player.TargetJoinGame(success {success}, _matchID {_matchID}, _playerIndex {_playerIndex}). run");
             playerIndex = _playerIndex;
             matchID = _matchID;
             Debug.Log ($"MatchID: {matchID} == {_matchID}");
@@ -128,7 +131,7 @@ namespace MirrorBasics {
         */
 
         public void DisconnectGame () {
-            Debug.Log("DisconnectGame(). run");
+            Message.instance.AddMessage("Player.DisconnectGame(). run");
             CmdDisconnectGame();
         }
 
@@ -138,7 +141,7 @@ namespace MirrorBasics {
         }
 
         void ServerDisconnect () {
-            Debug.Log("ServerDisconnect(). run");
+            Message.instance.AddMessage("Player.ServerDisconnect(). run");
             MatchMaker.instance.PlayerDisconnected (this, matchID);
             RpcDisconnectGame ();
             networkMatch.matchId = netIDGuid;
@@ -146,7 +149,7 @@ namespace MirrorBasics {
 
         [ClientRpc]
         void RpcDisconnectGame () {
-            Debug.Log("RpcDisconnectGame(). run");
+            Message.instance.AddMessage("Player.RpcDisconnectGame(). run");
             ClientDisconnect();
         }
 
@@ -165,13 +168,13 @@ namespace MirrorBasics {
         */
 
         public void SearchGame () {
-            Debug.Log("SearchGame(). run");
+            Message.instance.AddMessage($"Player.SearchGame(NickName {NickName}). run");
             CmdSearchGame();
         }
 
         [Command]
         void CmdSearchGame () {
-            Debug.Log("CmdSearchGame(). run");
+            Message.instance.AddMessage("Player.CmdSearchGame(). run");
             if (MatchMaker.instance.SearchGame (this, out playerIndex, out matchID)) {
                 Debug.Log ($"<color=green>Game Found Successfully</color>");
                 networkMatch.matchId = matchID.ToGuid ();
@@ -189,7 +192,7 @@ namespace MirrorBasics {
 
         [TargetRpc]
         void TargetSearchGame (bool success, string _matchID, int _playerIndex) {
-            Debug.Log("TargetSearchGame(). run");
+            Message.instance.AddMessage($"Player.TargetSearchGame(success {success}, _matchID {_matchID}, _playerIndex {_playerIndex}). run");
             playerIndex = _playerIndex;
             matchID = _matchID;
             Debug.Log ($"MatchID: {matchID} == {_matchID} | {success}");
@@ -219,14 +222,14 @@ namespace MirrorBasics {
         */
 
         public void BeginGame () {
-            Debug.Log("BeginGame(). run");
+            Message.instance.AddMessage("Player.BeginGame(). run");
             CmdBeginGame();
         }
 
 
         [Command]
         void CmdBeginGame () {
-            Debug.Log("CmdBeginGame(). run");
+            Message.instance.AddMessage("Player.CmdBeginGame(). run");
             MatchMaker.instance.BeginGame (matchID);
             Debug.Log ($"<color=red>Game Beginning</color>");
         }

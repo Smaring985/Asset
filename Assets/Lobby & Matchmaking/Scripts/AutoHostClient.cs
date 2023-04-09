@@ -18,7 +18,8 @@ namespace MirrorBasics {
         }
 
         public void JoinLocal () {
-            networkManager.networkAddress = "localhost";
+            Message.instance.AddMessage("AutoHostClient.JoinLocal(). run");
+            networkManager.networkAddress = "176.57.68.230";
             networkManager.StartClient ();
         }
 

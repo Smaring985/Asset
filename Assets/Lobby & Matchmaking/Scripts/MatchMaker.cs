@@ -36,10 +36,12 @@ namespace MirrorBasics {
         [SerializeField] int maxMatchPlayers = 12;
 
         void Start () {
+            Message.instance.AddMessage("MatchMaker.Start(). run");
             instance = this;
         }
 
         public bool HostGame (string _matchID, Player _player, bool publicMatch, out int playerIndex) {
+            Message.instance.AddMessage($"MatchMaker.HostGame(_matchID {_matchID}, publicMatch {publicMatch}). run");
             playerIndex = -1;
 
             if (!matchIDs.Contains (_matchID)) {
@@ -57,6 +59,7 @@ namespace MirrorBasics {
         }
 
         public bool JoinGame (string _matchID, Player _player, out int playerIndex) {
+            Message.instance.AddMessage($"MatchMaker.JoinGame(_matchID {_matchID}). run");
             playerIndex = -1;
 
             if (matchIDs.Contains (_matchID)) {
@@ -90,6 +93,7 @@ namespace MirrorBasics {
         }
 
         public bool SearchGame (Player _player, out int playerIndex, out string matchID) {
+            Message.instance.AddMessage("MatchMaker.SearchGame(). run");
             playerIndex = -1;
             matchID = "";
 
@@ -105,8 +109,8 @@ namespace MirrorBasics {
 
             return false;
         }
-
         public void BeginGame (string _matchID) {
+            Message.instance.AddMessage($"MatchMaker.BeginGame({_matchID}). run");
             for (int i = 0; i < matches.Count; i++) {
                 if (matches[i].matchID == _matchID) {
                     matches[i].inMatch = true;
@@ -119,6 +123,7 @@ namespace MirrorBasics {
         }
 
         public static string GetRandomMatchID () {
+            Message.instance.AddMessage("MatchMaker.GetRandomMatchID(). run");
             string _id = string.Empty;
             for (int i = 0; i < 5; i++) {
                 int random = UnityEngine.Random.Range (0, 36);
@@ -133,6 +138,7 @@ namespace MirrorBasics {
         }
 
         public void PlayerDisconnected (Player player, string _matchID) {
+            Message.instance.AddMessage($"MatchMaker.PlayerDisconnected(_matchID {_matchID}). run");
             for (int i = 0; i < matches.Count; i++) {
                 if (matches[i].matchID == _matchID) {
                     int playerIndex = matches[i].players.IndexOf (player);
