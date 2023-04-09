@@ -1062,13 +1062,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
   runInBackground: 1
-  autoStartServerBuild: 1
+  autoStartServerBuild: 0
   autoConnectClientBuild: 0
   sendRate: 30
   offlineScene: Assets/Lobby & Matchmaking/Scenes/Offline.unity
   onlineScene: Assets/Lobby & Matchmaking/Scenes/Lobby.unity
   transport: {fileID: 1778308316}
-  networkAddress: localhost
+  networkAddress: 192.168.1.4
   maxConnections: 64
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 1093037038611221156, guid: a1fecb3557e080348b3de5906776f1bf, type: 3}
@@ -1085,7 +1085,7 @@ MonoBehaviour:
     dynamicAdjustment: 1
     dynamicAdjustmentTolerance: 1
     deliveryTimeEmaDuration: 2
-  timeInterpolationGui: 0
+  timeInterpolationGui: 1
 --- !u!114 &1778308316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1098,7 +1098,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  port: 175
+  port: 1235
   DualMode: 1
   NoDelay: 1
   Interval: 10
@@ -1112,9 +1112,9 @@ MonoBehaviour:
   MaximizeSocketBuffers: 1
   ReliableMaxMessageSize: 297433
   UnreliableMaxMessageSize: 1195
-  debugLog: 0
-  statisticsGUI: 0
-  statisticsLog: 0
+  debugLog: 1
+  statisticsGUI: 1
+  statisticsLog: 1
 --- !u!4 &1778308317
 Transform:
   m_ObjectHideFlags: 0
