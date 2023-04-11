@@ -129,6 +129,7 @@ public class OwnMatchMaker : NetworkBehaviour
                 client.OnBeginGameIntoMatch();
             }
         }
+        WriteMatches();
     }
 
     [ContextMenu("Write Matches")]
@@ -145,6 +146,20 @@ public class OwnMatchMaker : NetworkBehaviour
             }
             message += $"Address {match.Address}, isFull {match.isFull}, isOpen {match.isOpen}, MaxClientsAmount {match.MaxClientsAmount}, clients {clients}\n";
         }
+        GUIUtility.systemCopyBuffer = message;
+        Debug.Log(message);
+    }
+    public void WriteMatch(OwnMatch match)
+    {
+        Debug.Log("WriteMatches");
+        string message = "";
+
+        string clients = "";
+        foreach (OwnClient client in match.Clients)
+        {
+            clients += client.NickName + " ";
+        }
+        message += $"Address {match.Address}, isFull {match.isFull}, isOpen {match.isOpen}, MaxClientsAmount {match.MaxClientsAmount}, clients {clients}\n";
         GUIUtility.systemCopyBuffer = message;
         Debug.Log(message);
     }
@@ -170,4 +185,15 @@ public class OwnMatchMaker : NetworkBehaviour
         return _id;
     }
 
+}
+public static class MatchExtensions
+{
+    public static Guid ToGuid(this string id)
+    {
+        MD5CryptoServiceProvider provider = new MD5CryptoServiceProvider();
+        byte[] inputBytes = Encoding.Default.GetBytes(id);
+        byte[] hashBytes = provider.ComputeHash(inputBytes);
+
+        return new Guid(hashBytes);
+    }
 }

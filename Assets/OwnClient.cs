@@ -15,7 +15,17 @@ public class OwnClient : NetworkBehaviour
     public static OwnClient localClient;
     [SyncVar] public OwnMatch Match=null;
 
-
+    Guid netIDGuid;
+    NetworkMatch networkMatch;
+    void Awake()
+    {
+        networkMatch = GetComponent<NetworkMatch>();
+    }
+    public override void OnStartServer()
+    {
+        netIDGuid = netId.ToString().ToGuid();
+        networkMatch.matchId = netIDGuid;
+    }
     public override void OnStartClient()
     {
         Debug.Log("Client.OnStartClient()");
