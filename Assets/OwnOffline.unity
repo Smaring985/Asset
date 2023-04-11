@@ -1085,7 +1085,7 @@ MonoBehaviour:
     dynamicAdjustment: 1
     dynamicAdjustmentTolerance: 1
     deliveryTimeEmaDuration: 2
-  timeInterpolationGui: 1
+  timeInterpolationGui: 0
 --- !u!114 &1778308316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1112,7 +1112,7 @@ MonoBehaviour:
   MaximizeSocketBuffers: 1
   ReliableMaxMessageSize: 297433
   UnreliableMaxMessageSize: 1195
-  debugLog: 1
+  debugLog: 0
   statisticsGUI: 1
   statisticsLog: 1
 --- !u!4 &1778308317

@@ -14,6 +14,7 @@ namespace MirrorBasics {
                 networkManager.StartClient ();
             } else {
                 Debug.Log ($"=== Server Build ===");
+                networkManager.StartServer();
             }
         }
 
