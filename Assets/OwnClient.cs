@@ -10,20 +10,15 @@ public class OwnClient : NetworkBehaviour
     [SyncVar] public string NickName = "None";
     [SyncVar] public bool isInMatch=false;
     [SyncVar] public string MatchID="Empty";
+    [SyncVar] public bool isMatchHost=true;
 
-    [SerializeField] GameObject playerLobbyUI;
-    NetworkMatch networkMatch;
-    Guid netIDGuid;
     public static OwnClient localClient;
+    [SyncVar] public OwnMatch Match=null;
 
-    public override void OnStartServer()
-    {
-        Message.instance.AddMessage("Player.OnStartServer(). run");
-        netIDGuid = MatchExtensions.ToGuid(netId.ToString());
-        networkMatch.matchId = netIDGuid;
-    }
+
     public override void OnStartClient()
     {
+        Debug.Log("Client.OnStartClient()");
         if (isLocalPlayer)
         {
             localClient = this;
@@ -31,70 +26,32 @@ public class OwnClient : NetworkBehaviour
         else
         {
             Debug.Log($"Spawning other player UI Prefab (NickName {NickName})");
-            playerLobbyUI = OwnLobby.instance.SpawnPlayerUIPrefab(this);
+            //playerLobbyUI = UILobby.instance.SpawnPlayerUIPrefab(this);
         }
     }
-    public override void OnStopClient()
+    public void BeginMatch()
     {
-        Message.instance.AddMessage($"Client Stopped");
-        //ClientDisconnect();
+        OwnMatchMaker.instance.BeginMatch(Match);
     }
-
-    public override void OnStopServer()
+    public void SearchMatch()
     {
-        Message.instance.AddMessage($"Client Stopped on Server");
-        //ServerDisconnect();
+        OwnMatchMaker.instance.SearchAndJoinIntoMatch(this);
     }
-
-    public void DisconnectGame()
-    {
-        CmdDisconnectGame();
-    }
-
-    [Command]
-    void CmdDisconnectGame()
-    {
-        ServerDisconnect();
-    }
-
-    void ServerDisconnect()
+    public void DisconnectFromMatch()
     {
         OwnMatchMaker.instance.ClientDisconnect(this);
-        RpcDisconnectGame();
-        networkMatch.matchId = netIDGuid;
     }
 
-    [ClientRpc]
-    void RpcDisconnectGame()
+    public void OnClientJoinIntoMatch()
     {
-        Message.instance.AddMessage("Player.RpcDisconnectGame(). run");
-        ClientDisconnect();
+        if (Match.isFull)
+        {
+            Debug.Log("Game was started");
+            // start the game
+        }    
     }
-
-    void ClientDisconnect()
+    public void OnBeginGameIntoMatch()
     {
-        if (playerLobbyUI != null)
-        {
-            if (!isServer)
-            {
-                Destroy(playerLobbyUI);
-            }
-            else
-            {
-                playerLobbyUI.SetActive(false);
-            }
-        }
-    }
-
-    public void JoinIntoMatch(string address)
-    {
-        if ((address == "" || address== "Empty")&& address.Length!=5)
-        {
-            OwnMatchMaker.instance.SearchAndJoinIntoMatch(this);
-        }
-        else
-        {
-            OwnMatchMaker.instance.FindMatchWithAddress(this,address);
-        }
+        Debug.Log("I been into a game");
     }
 }

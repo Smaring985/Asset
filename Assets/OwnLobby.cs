@@ -6,24 +6,51 @@ using UnityEngine.UI;
 public class OwnLobby : MonoBehaviour
 {
     public static OwnLobby instance;
-    public InputField MatchAddress;
+    public InputField NickName;
+    public Text Nick;
 
-    [SerializeField] Transform UIClientParent;
-    [SerializeField] GameObject UIClientPrefab;
+    public GameObject ClientPrefab;
+
 
     public void Awake()
     {
         instance = this;
     }
-    public void Join()    // Join button
-    {
-        OwnClient.localClient.JoinIntoMatch(MatchAddress.text);
-    }
-    public GameObject SpawnPlayerUIPrefab(OwnClient client)
-    {
-        GameObject newUIPlayer = Instantiate(UIClientPrefab, UIClientParent);
-        newUIPlayer.GetComponent<OwnUIClient>().SetClient(client);
 
-        return newUIPlayer;
+
+
+    public void SetNickName()
+    {
+        OwnClient.localClient.NickName = NickName.text;
+        Nick.text = NickName.text;
+    }
+    public void Begin()
+    {
+        OwnClient.localClient.BeginMatch();
+    }   
+    public void Search()
+    {
+        OwnClient.localClient.SearchMatch();
+    }
+    public void Disconnect()
+    {
+        OwnClient.localClient.DisconnectFromMatch();
+    }
+    public void WriteMatches()
+    {
+        OwnMatchMaker.instance.WriteMatches();
+    }
+
+    public void OnJoinedIntoServer()
+    {
+        OwnClient client = new OwnClient();
+        InstantiateClient(client);
+    }
+
+    public void InstantiateClient(OwnClient client)
+    {
+        GameObject go = Instantiate(ClientPrefab);
+        OwnClient goClient = go.GetComponent<OwnClient>();
+        goClient = client;
     }
 }

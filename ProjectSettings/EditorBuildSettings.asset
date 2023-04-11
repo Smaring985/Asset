@@ -6,12 +6,18 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/OwnOffline.unity
+    guid: abb421c80b7e6d64cbf63d1275084854
+  - enabled: 1
+    path: Assets/OwnLobby.unity
+    guid: 140720b57dfddca4d87c4c908792c255
+  - enabled: 1
     path: Assets/Lobby & Matchmaking/Scenes/Offline.unity
     guid: ec97495294cb99a4fadad81c1aa760f1
   - enabled: 1
-    path: Assets/Lobby & Matchmaking/Scenes/Lobby.unity
-    guid: 7033eeeb3efdd4c4b96fa852067df1c9
-  - enabled: 1
     path: Assets/Lobby & Matchmaking/Scenes/Game.unity
     guid: 7dc989da921c0674581d896ea2ea8c46
+  - enabled: 1
+    path: Assets/Lobby & Matchmaking/Scenes/Lobby.unity
+    guid: 7033eeeb3efdd4c4b96fa852067df1c9
   m_configObjects: {}

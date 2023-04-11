@@ -9,7 +9,6 @@ using UnityEngine;
 public class OwnMatch
 {
     public string Address="1XYJ7"; // .ToUpper();
-    public bool isPublic=true;
     public bool isFull=false;
     public bool isOpen=true;
     public int MaxClientsAmount = 4;
@@ -17,10 +16,9 @@ public class OwnMatch
 
     public OwnMatch() { }
 
-    public OwnMatch(string address, bool isPublic, OwnClient client, int maxClientsAmount=4)
+    public OwnMatch(string address, OwnClient client, int maxClientsAmount=4)
     {
         Address = address;
-        this.isPublic = isPublic;
         isFull = false;
         isOpen = true;
         MaxClientsAmount = maxClientsAmount;
@@ -36,39 +34,73 @@ public class OwnMatchMaker : NetworkBehaviour
     public void Start()
     {
         instance = this;
-    } 
-
-    public bool FindMatchWithAddress(OwnClient client,string address)
-    {
-        address = address.ToUpper();
-        foreach(OwnMatch match in Matches)
-        {
-            if (match.Address == address)
-            {
-                return JoinIntoMatch(client, match);
-            }
-        }              
-        return false;
     }
-    public bool SearchAndJoinIntoMatch(OwnClient client)
+
+
+    public void OnConnectedToServer()
     {
-        foreach (OwnMatch match in Matches)
+        Debug.Log("OnConnectedToServer");
+        // client join into server
+        OwnLobby.instance.OnJoinedIntoServer();
+    }
+
+    public bool SearchAndJoinIntoMatch(OwnClient client)
+    {      
+        Debug.Log("SearchAndJoinIntoMatch");
+        if (!client.isInMatch)
         {
-            if (match.isPublic&& match.isOpen&& !match.isFull)
+            foreach (OwnMatch match in Matches)
             {
-                return JoinIntoMatch(client, match);
+                if (match.isOpen && !match.isFull)
+                {
+                    if (JoinIntoMatch(client, match))
+                    {
+                        return true;
+                    }
+                }
             }
+            return HostMatch(client);
         }
         return false;
     }
-    public bool JoinIntoMatch(OwnClient client,OwnMatch match)
+    public bool JoinIntoMatch(OwnClient joinedClient,OwnMatch match)
     {
-        Debug.Log($"<color=green> I been join into match </color>");
-        match.Clients.Add(client);
+        Debug.Log("JoinIntoMatch");
+        if (Matches.Contains(match) && !match.Clients.Contains(joinedClient))
+        {
+            match.Clients.Add(joinedClient);
+            joinedClient.Match = match;
+            joinedClient.MatchID = match.Address;
+
+            if (match.Clients.Count == match.MaxClientsAmount)
+            {
+                match.isFull = true;
+            }
+
+            Debug.Log($"<color=green> I been join into match </color> and match.isFull={match.isFull}");
+            foreach (OwnClient client in match.Clients)
+            {
+                if (client != joinedClient)
+                {
+                    client.OnClientJoinIntoMatch();
+                }
+            }
+            return true;
+        }
         return false;    
+    }
+    public bool HostMatch(OwnClient client)
+    {
+        Debug.Log("HostMatch");
+        OwnMatch match = new OwnMatch(GetRandomMatchID(), client);
+        client.Match = match;
+        client.MatchID = match.Address;
+        Matches.Add(match);
+        return Matches.Contains(match);
     }
     public void ClientDisconnect(OwnClient client)
     {
+        Debug.Log("ClientDisconnect");
         if (client.MatchID != "Empty" || client.MatchID != "")
         {
             foreach (OwnMatch match in Matches)
@@ -77,11 +109,44 @@ public class OwnMatchMaker : NetworkBehaviour
                 {
                     if (match.Clients.Contains(client))
                     {
+                        client.Match = null;
+                        client.MatchID = "Empty";
                         match.Clients.Remove(client);
+                        return;
                     }
                 }
             }
         }
+    }
+    public void BeginMatch(OwnMatch match)
+    {
+        Debug.Log("BeginMatch");
+        match.isOpen = false;
+        foreach (OwnClient client in match.Clients)
+        {
+            if (!client.isMatchHost)
+            {
+                client.OnBeginGameIntoMatch();
+            }
+        }
+    }
+
+    [ContextMenu("Write Matches")]
+    public void WriteMatches()
+    {
+        Debug.Log("WriteMatches");
+        string message = "";
+        foreach (OwnMatch match in Matches)
+        {
+            string clients = "";
+            foreach(OwnClient client in match.Clients)
+            {
+                clients += client.NickName+" ";
+            }
+            message += $"Address {match.Address}, isFull {match.isFull}, isOpen {match.isOpen}, MaxClientsAmount {match.MaxClientsAmount}, clients {clients}\n";
+        }
+        GUIUtility.systemCopyBuffer = message;
+        Debug.Log(message);
     }
 
 
@@ -105,15 +170,4 @@ public class OwnMatchMaker : NetworkBehaviour
         return _id;
     }
 
-}
-public static class MatchExtensions
-{
-    public static Guid ToGuid(this string id)
-    {
-        MD5CryptoServiceProvider provider = new MD5CryptoServiceProvider();
-        byte[] inputBytes = Encoding.Default.GetBytes(id);
-        byte[] hashBytes = provider.ComputeHash(inputBytes);
-
-        return new Guid(hashBytes);
-    }
 }

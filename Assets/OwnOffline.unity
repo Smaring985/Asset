@@ -1065,10 +1065,10 @@ MonoBehaviour:
   autoStartServerBuild: 1
   autoConnectClientBuild: 0
   sendRate: 30
-  offlineScene: Assets/Lobby & Matchmaking/Scenes/Offline.unity
-  onlineScene: Assets/Lobby & Matchmaking/Scenes/Lobby.unity
+  offlineScene: Assets/OwnOffline.unity
+  onlineScene: Assets/OwnLobby.unity
   transport: {fileID: 1778308316}
-  networkAddress: 176.57.68.230
+  networkAddress: localhost
   maxConnections: 64
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 3962803314485739945, guid: eded767ad3998b142b4afa52af24fbec, type: 3}
